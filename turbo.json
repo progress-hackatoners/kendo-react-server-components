@@ -1,0 +1,12 @@
+{
+    "pipeline": {
+        "build": {
+            "outputs": [
+                "demos/.next/**"
+            ]
+        },
+        "lint": {
+            "outputs": []
+        }
+    }
+}
