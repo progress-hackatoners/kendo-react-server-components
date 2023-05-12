@@ -3,7 +3,10 @@ import { NextApiRequest, NextApiResponse } from "next";
 import store from "../../../data";
 import { User } from "../../../models";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   const { page, take = "10", sort } = req.query;
 
   if (page) {
@@ -35,7 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       users = users.slice(start, end);
     }
 
-  /* await new Promise<void>((resolve) =>
+    /* await new Promise<void>((resolve) =>
     setTimeout(() => {
       resolve();
     }, 1000)
@@ -43,8 +46,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     res.status(200);
     res.json(users);
-
-    return res;
   } else {
     res.status(200).json(store.users);
   }

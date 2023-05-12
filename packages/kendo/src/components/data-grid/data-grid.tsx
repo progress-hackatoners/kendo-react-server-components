@@ -1,37 +1,34 @@
-import DataGridServer, {
-  DataGridServerProps,
-} from "./data-grid-server";
+import React from "react";
+
+import DataGridServer, { DataGridServerProps } from "./data-grid-server";
 import DataGridClient, { DataGridClientProps } from "./data-grid-client";
-import { cookies } from "next/headers";
-import { DataGridState } from "./reducer";
 
-export type DataGridProps = DataGridServerProps & DataGridClientProps & {};
+export type DataGridProps = DataGridServerProps &
+  DataGridClientProps & {
+    DataSource?: any;
+    DataState?: any;
+  };
 
-export const deserialize = (state?: string) => {
-  if (state) {
-    return JSON.parse(decodeURI(state));
-  } else {
-    return {};
-  }
-};
-
-const defaultState: DataGridState = {
-  page: 1,
-  take: 10,
-  expanded: [],
-  sort: [],
-};
-
-export default async function DataGrid(props: DataGridProps) {
-  const stateStr = cookies().get("kendo-grid")?.value || "";
-  const state = deserialize(stateStr);
-
+async function DataGrid(props: DataGridProps) {
   return (
-    <>
-      <DataGridClient  {...props} state={{ ...defaultState, ...state }}>
+    <props.DataState.type state={props.state}>
+      <DataGridClient state={props.state}>
         {/* @ts-ignore shut up next */}
-        <DataGridServer {...props} state={{ ...defaultState, ...state }} />
+        <DataGridServer state={props.state} data={props.data} />
       </DataGridClient>
-    </>
+    </props.DataState.type>
   );
 }
+
+// eslint-disable-next-line react/display-name
+const withDataSource = (Component: any) => (props: any) => {
+  const { DataSource, ...other } = props;
+
+  return (
+    <DataSource.type>
+      <Component {...other} />
+    </DataSource.type>
+  );
+};
+
+export default withDataSource(DataGrid);

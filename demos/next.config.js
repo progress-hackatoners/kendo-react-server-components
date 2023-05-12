@@ -2,8 +2,8 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  transpilePackages: ['kendo'],
   experimental: {
-    transpilePackages: ['kendo'],
     appDir: true,
   },
 }

@@ -3,6 +3,7 @@ export const initialDataGridState: DataGridState = {
   take: 20,
   page: 0,
   sort: [],
+  total: 100,
 };
 
 export type DataGridState = {
@@ -10,6 +11,7 @@ export type DataGridState = {
   take: number;
   page: number;
   sort: SortDescriptor[];
+  total: number;
 };
 
 export enum EXPAND_ACTION {
@@ -100,10 +102,12 @@ export const dataGridReducer = (
                   }
                 : item
             )
-          : [{
-            ...action.payload,
-            dir: action.payload.dir || "asc"
-          }],
+          : [
+              {
+                ...action.payload,
+                dir: action.payload.dir || "asc",
+              },
+            ],
       };
     default:
       return state;

@@ -1,8 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import * as React from "react";
-import { DataGridServerProps } from "./data-grid-server";
+import React from "react";
+
 import {
   DataGridAction,
   dataGridReducer,
@@ -10,12 +9,10 @@ import {
   initialDataGridState,
 } from "./reducer";
 
-export type DataGridClientProps = DataGridServerProps & {
+export type DataGridClientProps = {
+  state?: any;
+  onStateChange?: any;
   children?: React.ReactNode;
-};
-
-const serialize = (state: any) => {
-  return JSON.stringify(state);
 };
 
 export const DataContext = React.createContext<
@@ -28,21 +25,19 @@ export const DataContext = React.createContext<
 ]);
 
 export default function DataGrid(props: DataGridClientProps) {
-  const router = useRouter();
-  const state = props.state;
+  const { state, onStateChange, children } = props;
 
   const handleStateDispatch = React.useCallback(
     (action: DataGridAction) => {
       const newState = dataGridReducer(state, action);
-      document.cookie = `kendo-grid=${serialize(newState)}`;
-      router.refresh();
+      onStateChange?.(newState);
     },
-    [router, state]
+    [state, onStateChange]
   );
 
   return (
     <DataContext.Provider value={[state, handleStateDispatch]}>
-      {props.children}
+      {children}
     </DataContext.Provider>
   );
 }

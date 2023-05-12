@@ -2,28 +2,21 @@ import React from "react";
 import { Checkbox } from "../inputs";
 import DataGridMasterRow from "./master-row";
 import DataGridHeaderCell from "./header-cell";
-import { DataGridState } from "./reducer";
 import Pager from "./pager";
+import { DataGridState } from "./reducer";
 
 export type KendoGridState = {
   expanded: Array<string | number>;
 };
 
-async function getData({ page = 1, take = 10, sort = [] }: DataGridState) {
-  const res = await fetch(
-    `http://localhost:3000/api/users?page=${page}&take=${take}&sort=${JSON.stringify(sort)}`
-  );
-  return res.json();
-}
-
 export type DataGridServerProps = {
   state: DataGridState;
-  total?: number;
+  data: any;
 };
 
 export default async function DataGrid(props: DataGridServerProps) {
-  const state: DataGridState = props?.state;
-  let data = await getData(state);
+  const data = props.data || [];
+  const state = props.state;
 
   return (
     <div>
@@ -31,14 +24,18 @@ export default async function DataGrid(props: DataGridServerProps) {
         <tbody>
           <tr>
             <DataGridHeaderCell style={{ width: 20 }}></DataGridHeaderCell>
-            <DataGridHeaderCell style={{ width: 200 }} field="name">Name</DataGridHeaderCell>
+            <DataGridHeaderCell style={{ width: 200 }} field="name">
+              Name
+            </DataGridHeaderCell>
             <DataGridHeaderCell style={{ width: 200 }} field="jobTitle">
               Job Title
             </DataGridHeaderCell>
             <DataGridHeaderCell style={{ width: 200 }} field="company">
               Company
             </DataGridHeaderCell>
-            <DataGridHeaderCell style={{ width: 200 }} field="city">City</DataGridHeaderCell>
+            <DataGridHeaderCell style={{ width: 200 }} field="city">
+              City
+            </DataGridHeaderCell>
           </tr>
         </tbody>
       </table>
@@ -56,26 +53,26 @@ export default async function DataGrid(props: DataGridServerProps) {
                   <td style={{ width: 200 }}>{entry.company}</td>
                   <td style={{ width: 200 }}>{entry.city}</td>
                 </tr>
-                {state?.expanded?.includes(entry.id) && (
-                  <React.Fragment key={entry.id}>
-                    <React.Suspense
-                      fallback={
-                        <tr>
-                          <td colSpan={4}>
-                            <div>Loooading...</div>
-                          </td>
-                        </tr>
-                      }
-                      key={`${entry.id}-master`}
-                    >
+                <React.Suspense
+                  fallback={
+                    <tr>
+                      <td colSpan={4}>
+                        <div>Loooading...</div>
+                      </td>
+                    </tr>
+                  }
+                  key={`${entry.id}-master`}
+                >
+                  {state?.expanded?.includes(entry.id) && (
+                    <React.Fragment key={entry.id}>
                       {/* @ts-ignore shut up next */}
                       <DataGridMasterRow
                         id={entry.id}
                         key={entry.id}
                       ></DataGridMasterRow>
-                    </React.Suspense>
-                  </React.Fragment>
-                )}
+                    </React.Fragment>
+                  )}
+                </React.Suspense>
               </React.Fragment>
             ))}
           </tbody>
@@ -86,7 +83,7 @@ export default async function DataGrid(props: DataGridServerProps) {
           <tbody>
             <tr>
               <td style={{ width: 20 }}>
-                <Pager page={state.page} total={props.total} />
+                <Pager page={state.page} total={state.total} />
               </td>
             </tr>
           </tbody>

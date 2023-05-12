@@ -11,10 +11,13 @@ export type DataGridHeaderCellProps = {
   field?: string;
 };
 
-function HeaderCell({ field, children, ...other }: DataGridHeaderCellProps) {
+function HeaderCell(props: DataGridHeaderCellProps) {
+  const { field, children, ...other } = { ...defaultProps, ...props };
+
   const [state, dispatch] = React.useContext(DataContext);
 
   const handleClick = React.useCallback(() => {
+    console.log('here');
     if (field && dispatch) {
       dispatch({
         type: SORTING_ACTION.TOGGLE,
@@ -27,7 +30,11 @@ function HeaderCell({ field, children, ...other }: DataGridHeaderCellProps) {
   const sort = state.sort.find((s) => s.field === field);
 
   return (
-    <th {...other} style={{ ...other.style, position: 'relative' }} onClick={handleClick}>
+    <th
+      {...other}
+      style={{ ...other.style, position: "relative" }}
+      onClick={handleClick}
+    >
       {children}
       &nbsp;
       {sort ? (
@@ -48,7 +55,5 @@ function HeaderCell({ field, children, ...other }: DataGridHeaderCellProps) {
 const defaultProps = {
   style: {},
 };
-
-HeaderCell.defaultProps = defaultProps;
 
 export default HeaderCell;
