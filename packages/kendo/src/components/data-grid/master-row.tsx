@@ -5,15 +5,19 @@ export type DataGridMasterRowProps = {
 };
 
 const fetchData = async (id?: string | number) => {
-  const res = await fetch(`http://localhost:3000/api/users/${id}`, {
-    /* cache: "no-store" */
-  });
+  const res = await fetch(
+    `http://localhost:3000/api/users/${id}` /* , {
+    cache: "no-store",
+  } */
+  );
 
   return res.json();
 };
 
 export default async function DataGridMasterRow(props: DataGridMasterRowProps) {
-  const item = await fetchData(props.id);
+  const itemData = fetchData(props.id);
+
+  const [item] = await Promise.all([itemData]);
 
   return (
     <tr>
@@ -29,11 +33,11 @@ export default async function DataGridMasterRow(props: DataGridMasterRowProps) {
                   alt={`Avatar for ${item.username}`}
                 />
               </td>
-              <td >
+              <td>
                 <h3>{item.name}</h3>
                 <p>{item.jobTitle}</p>
               </td>
-              <td >
+              <td>
                 <p>{item.company}</p>
                 <p>{item.city}</p>
               </td>

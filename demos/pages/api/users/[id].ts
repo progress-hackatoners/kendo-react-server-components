@@ -17,7 +17,7 @@ export default async function personHandler(
   await new Promise<void>((resolve) =>
     setTimeout(() => {
       resolve();
-    }, 500)
+    }, 1000)
   );
 
   filtered.length > 0

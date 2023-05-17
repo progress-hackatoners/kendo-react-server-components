@@ -5,30 +5,40 @@ import DataGridClient, { DataGridClientProps } from "./data-grid-client";
 
 export type DataGridProps = DataGridServerProps &
   DataGridClientProps & {
-    DataSource?: any;
-    DataState?: any;
+    getData?: any;
+    getInitialData?: any;
+    getState?: any;
+    onStateChangeAction?: any;
   };
 
+let data: any;
+let state: any;
+
 async function DataGrid(props: DataGridProps) {
+  const { getData, getInitialData, onStateChangeAction } = props;
+
+  if (!state) {
+    state = await props.getState();
+  }
+
+  if (!data) {
+    data = await getInitialData(state);
+  }
+
+  const handleStateChange = async (newState: any) => {
+    "use server";
+    data = await getData(newState);
+    onStateChangeAction?.(newState);
+  };
+
   return (
-    <props.DataState.type state={props.state}>
-      <DataGridClient state={props.state}>
+    <DataGridClient state={state} onStateChange={handleStateChange}>
+      <React.Suspense fallback={<div>loooading</div>}>
         {/* @ts-ignore shut up next */}
-        <DataGridServer state={props.state} data={props.data} />
-      </DataGridClient>
-    </props.DataState.type>
+        <DataGridServer getState={props.getState} data={data} />
+      </React.Suspense>
+    </DataGridClient>
   );
 }
 
-// eslint-disable-next-line react/display-name
-const withDataSource = (Component: any) => (props: any) => {
-  const { DataSource, ...other } = props;
-
-  return (
-    <DataSource.type>
-      <Component {...other} />
-    </DataSource.type>
-  );
-};
-
-export default withDataSource(DataGrid);
+export default DataGrid;

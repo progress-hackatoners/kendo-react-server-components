@@ -5,6 +5,7 @@ const nextConfig = {
   transpilePackages: ['kendo'],
   experimental: {
     appDir: true,
+    serverActions: true
   },
 }
 

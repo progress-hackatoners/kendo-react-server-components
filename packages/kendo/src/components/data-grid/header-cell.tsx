@@ -16,8 +16,7 @@ function HeaderCell(props: DataGridHeaderCellProps) {
 
   const [state, dispatch] = React.useContext(DataContext);
 
-  const handleClick = React.useCallback(() => {
-    console.log('here');
+  const handleClick = () => {
     if (field && dispatch) {
       dispatch({
         type: SORTING_ACTION.TOGGLE,
@@ -26,8 +25,8 @@ function HeaderCell(props: DataGridHeaderCellProps) {
         },
       });
     }
-  }, [dispatch, field]);
-  const sort = state.sort.find((s) => s.field === field);
+  };
+  const sort = state?.sort.find((s) => s.field === field);
 
   return (
     <th

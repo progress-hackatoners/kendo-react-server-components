@@ -1,22 +1,23 @@
 import React from "react";
-import { Checkbox } from "../inputs";
-import DataGridMasterRow from "./master-row";
-import DataGridHeaderCell from "./header-cell";
+
 import Pager from "./pager";
-import { DataGridState } from "./reducer";
+import { DataGridRow } from "./data-grid-row";
+import DataGridHeaderCell from "./header-cell";
+import DataGridBody from "./data-grid-body";
 
 export type KendoGridState = {
   expanded: Array<string | number>;
+  sort: Array<any>;
 };
 
 export type DataGridServerProps = {
-  state: DataGridState;
-  data: any;
+  getState: any;
+  getData: any;
+  Row: any;
 };
 
-export default async function DataGrid(props: DataGridServerProps) {
-  const data = props.data || [];
-  const state = props.state;
+const DataGrid = async (props: DataGridServerProps) => {
+  const state = (await props.getState?.()) || {};
 
   return (
     <div>
@@ -39,45 +40,10 @@ export default async function DataGrid(props: DataGridServerProps) {
           </tr>
         </tbody>
       </table>
-      <div>
-        <table>
-          <tbody>
-            {data.map((entry: any) => (
-              <React.Fragment key={entry.id}>
-                <tr style={{ height: 40 }}>
-                  <td style={{ width: 20 }}>
-                    <Checkbox id={entry.id} />
-                  </td>
-                  <td style={{ width: 200 }}>{entry.name}</td>
-                  <td style={{ width: 200 }}>{entry.jobTitle}</td>
-                  <td style={{ width: 200 }}>{entry.company}</td>
-                  <td style={{ width: 200 }}>{entry.city}</td>
-                </tr>
-                <React.Suspense
-                  fallback={
-                    <tr>
-                      <td colSpan={4}>
-                        <div>Loooading...</div>
-                      </td>
-                    </tr>
-                  }
-                  key={`${entry.id}-master`}
-                >
-                  {state?.expanded?.includes(entry.id) && (
-                    <React.Fragment key={entry.id}>
-                      {/* @ts-ignore shut up next */}
-                      <DataGridMasterRow
-                        id={entry.id}
-                        key={entry.id}
-                      ></DataGridMasterRow>
-                    </React.Fragment>
-                  )}
-                </React.Suspense>
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <React.Suspense fallback={<div>loading</div>}>
+        {/* @ts-ignore shut up next */}
+        <DataGridBody {...props} />
+      </React.Suspense>
       <div>
         <table>
           <tbody>
@@ -91,4 +57,6 @@ export default async function DataGrid(props: DataGridServerProps) {
       </div>
     </div>
   );
-}
+};
+
+export default DataGrid;

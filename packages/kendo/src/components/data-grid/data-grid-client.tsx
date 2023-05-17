@@ -1,6 +1,7 @@
 "use client";
 
-import React from "react";
+// @ts-ignore next
+import React, { experimental_useOptimistic as useOptimistic } from "react";
 
 import {
   DataGridAction,
@@ -25,19 +26,25 @@ export const DataContext = React.createContext<
 ]);
 
 export default function DataGrid(props: DataGridClientProps) {
-  const { state, onStateChange, children } = props;
+  const { state: serverState, onStateChange, children } = props;
+  const [state, setState] = React.useState(serverState);
+  const [isPending, startTransition] = React.useTransition();
 
-  const handleStateDispatch = React.useCallback(
-    (action: DataGridAction) => {
-      const newState = dataGridReducer(state, action);
-      onStateChange?.(newState);
-    },
-    [state, onStateChange]
-  );
+  const handleStateDispatch = (action: DataGridAction) => {
+    const newState = dataGridReducer(state, action);
+    setState(newState);
+    startTransition(() => {
+      onStateChange(newState);
+    });
+  };
 
   return (
     <DataContext.Provider value={[state, handleStateDispatch]}>
-      {children}
+      <div style={{ opacity: isPending ? 0.1 : 1 }}>
+        <React.Suspense fallback={<div>Loading</div>}>
+          {children}
+        </React.Suspense>
+      </div>
     </DataContext.Provider>
   );
 }
