@@ -6,36 +6,42 @@ import { KendoGridState } from "kendo/src/components/data-grid/data-grid-server"
 
 import { deserialize, serialize } from "../../utils";
 import { initialDataGridState } from "kendo/src/components/data-grid/reducer";
-import { revalidateTag } from "next/cache";
-// import { setState } from "../../actions";
 
 async function getData({ page = 1, take = 10, sort = [] }: any = {}) {
-  "use server";
-  const res = await fetch(
-    `http://localhost:3000/api/users?page=${page}&take=${take}&sort=${JSON.stringify(
-      sort
-    )}`,
+  return fetch(
+    `https://northwind.netcore.io/query/customers.json?skip=${
+      take * (page - 1)
+    }&take=${take}${sort
+      .map((s: any) =>
+        s.dir === "asc" ? `&orderBy=${s.field}` : `&orderByDesc=${s.field}`
+      )
+      .join("")}`,
     {
-      cache: "no-cache",
-      next: {
-        tags: ["data-grid"],
-      },
+      cache: "force-cache",
     }
-  );
-  const result = res.json();
-  return result;
+  )
+    .then((resp) => resp.json())
+    .then((json) => json.results);
 }
 
-async function getState(): Promise<any> {
+async function fetchAdditionalData(id?: string | number) {
+  return fetch(`https://northwind.netcore.io/query/orders.json?customerId=${id}`, {
+    cache: "force-cache",
+  })
+    .then((resp) => resp.json())
+    .then((json) => json.results);
+}
+
+const getState = async () => {
   return deserialize(
     cookies().get("kendo-grid")?.value || serialize(initialDataGridState)
   );
-}
+};
 
 export default async function Page() {
   const onStateChange = async (state: KendoGridState) => {
     "use server";
-    revalidateTag("data-grid");
+    cookies().set("kendo-grid", serialize(state));
   };
 
   return (
@@ -44,8 +50,8 @@ export default async function Page() {
       {/* @ts-expect-error Async Server Component */}
       <DataGrid
         getData={getData}
-        getInitialData={getData}
         getState={getState}
+        fetchAdditionalData={fetchAdditionalData}
         onStateChangeAction={onStateChange}
       />
     </div>

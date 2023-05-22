@@ -2,51 +2,49 @@ import React from "react";
 
 export type DataGridMasterRowProps = {
   id?: string | number;
+  fetchAdditionalData?: any;
 };
-
-const fetchData = async (id?: string | number) => {
-  const res = await fetch(
-    `http://localhost:3000/api/users/${id}` /* , {
-    cache: "no-store",
-  } */
-  );
-
-  return res.json();
-};
+function timeConvert(date: string): Date {
+  var miliseconds: any = date.replace(/(^.*\()|([+-].*$)/g, "");
+  miliseconds = parseInt(miliseconds);
+  return new Date(miliseconds);
+}
 
 export default async function DataGridMasterRow(props: DataGridMasterRowProps) {
-  const itemData = fetchData(props.id);
-
-  const [item] = await Promise.all([itemData]);
+  const orders = await props.fetchAdditionalData(props.id);
 
   return (
     <tr>
       <td colSpan={5}>
-        <table style={{ width: "100%" }}>
-          <tbody>
-            <tr key={item.id}>
-              <td>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  width={40}
-                  src={item.avatar}
-                  alt={`Avatar for ${item.username}`}
-                />
-              </td>
-              <td>
-                <h3>{item.name}</h3>
-                <p>{item.jobTitle}</p>
-              </td>
-              <td>
-                <p>{item.company}</p>
-                <p>{item.city}</p>
-              </td>
-
-              <td>
-                <p>{item.email}</p>
-                <p>{item.phone}</p>
-              </td>
+        <table style={{ width: "100%", background: "lightgray" }}>
+          <thead>
+            <tr>
+              <th>Address</th>
+              <th>Shipped Date</th>
+              <th>Required Date</th>
             </tr>
+          </thead>
+          <tbody>
+            {orders.map((item: any) => (
+              <tr key={item.id}>
+                <td>
+                  <span>{item.shipAddress}</span>
+                </td>
+                <td>
+                  <p>
+                    {item.shippedDate &&
+                      timeConvert(item.shippedDate).toDateString()}
+                  </p>
+                </td>
+
+                <td>
+                  <p>
+                    {item.requiredDate &&
+                      timeConvert(item.requiredDate).toDateString()}
+                  </p>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </td>

@@ -12,22 +12,12 @@ export const DataGridRow = (props: any) => {
         <td style={{ width: 20 }}>
           <Checkbox id={props.id} />
         </td>
-        <td style={{ width: 200 }}>{props.name}</td>
-        <td style={{ width: 200 }}>{props.jobTitle}</td>
-        <td style={{ width: 200 }}>{props.company}</td>
+        <td style={{ width: 200 }}>{props.id}</td>
+        <td style={{ width: 200 }}>{props.companyName}</td>
+        <td style={{ width: 200 }}>{props.country}</td>
         <td style={{ width: 200 }}>{props.city}</td>
       </tr>
-      {state.expanded?.includes?.(props.id) && (
-        <React.Suspense
-          fallback={
-            <tr>
-              <td>Incoming...!</td>
-            </tr>
-          }
-        >
-          {props.children}
-        </React.Suspense>
-      )}
+      {state.expanded?.includes?.(props.id) && props.children}
     </>
   );
 };

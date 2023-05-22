@@ -14,6 +14,7 @@ export type DataGridServerProps = {
   getState: any;
   getData: any;
   Row: any;
+  fetchAdditionalData?: any;
 };
 
 const DataGrid = async (props: DataGridServerProps) => {
@@ -25,22 +26,22 @@ const DataGrid = async (props: DataGridServerProps) => {
         <tbody>
           <tr>
             <DataGridHeaderCell style={{ width: 20 }}></DataGridHeaderCell>
-            <DataGridHeaderCell style={{ width: 200 }} field="name">
-              Name
+            <DataGridHeaderCell style={{ width: 200 }} field="Id">
+              ID
             </DataGridHeaderCell>
-            <DataGridHeaderCell style={{ width: 200 }} field="jobTitle">
-              Job Title
+            <DataGridHeaderCell style={{ width: 200 }} field="CompanyName">
+              Company Name
             </DataGridHeaderCell>
-            <DataGridHeaderCell style={{ width: 200 }} field="company">
-              Company
+            <DataGridHeaderCell style={{ width: 200 }} field="Country">
+              Country
             </DataGridHeaderCell>
-            <DataGridHeaderCell style={{ width: 200 }} field="city">
+            <DataGridHeaderCell style={{ width: 200 }} field="City">
               City
             </DataGridHeaderCell>
           </tr>
         </tbody>
       </table>
-      <React.Suspense fallback={<div>loading</div>}>
+      <React.Suspense fallback={<div key={"loading"}>loading</div>}>
         {/* @ts-ignore shut up next */}
         <DataGridBody {...props} />
       </React.Suspense>

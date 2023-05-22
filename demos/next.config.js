@@ -1,12 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
   swcMinify: true,
-  transpilePackages: ['kendo'],
+  transpilePackages: ["kendo"],
+  reactStrictMode: false,
   experimental: {
-    appDir: true,
-    serverActions: true
+    serverActions: true,
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;

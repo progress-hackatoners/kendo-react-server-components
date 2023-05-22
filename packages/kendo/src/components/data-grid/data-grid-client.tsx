@@ -27,20 +27,22 @@ export const DataContext = React.createContext<
 
 export default function DataGrid(props: DataGridClientProps) {
   const { state: serverState, onStateChange, children } = props;
-  const [state, setState] = React.useState(serverState);
-  const [isPending, startTransition] = React.useTransition();
+  const [state, setOptimisticState] = useOptimistic(
+    serverState,
+    (_: any, newSt: any) => newSt
+  );
 
-  const handleStateDispatch = (action: DataGridAction) => {
+  const handleStateDispatch = async (action: DataGridAction) => {
     const newState = dataGridReducer(state, action);
-    setState(newState);
-    startTransition(() => {
+    setOptimisticState(newState);
+    React.startTransition(() => {
       onStateChange(newState);
     });
   };
 
   return (
     <DataContext.Provider value={[state, handleStateDispatch]}>
-      <div style={{ opacity: isPending ? 0.1 : 1 }}>
+      <div>
         <React.Suspense fallback={<div>Loading</div>}>
           {children}
         </React.Suspense>

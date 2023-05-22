@@ -9,34 +9,21 @@ export type DataGridProps = DataGridServerProps &
     getInitialData?: any;
     getState?: any;
     onStateChangeAction?: any;
+    fetchAdditionalData?: any;
   };
-
-let data: any;
-let state: any;
 
 async function DataGrid(props: DataGridProps) {
-  const { getData, getInitialData, onStateChangeAction } = props;
-
-  if (!state) {
-    state = await props.getState();
-  }
-
-  if (!data) {
-    data = await getInitialData(state);
-  }
-
-  const handleStateChange = async (newState: any) => {
-    "use server";
-    data = await getData(newState);
-    onStateChangeAction?.(newState);
-  };
+  const { getData, getState, onStateChangeAction } = props;
+  const state = await getState();
 
   return (
-    <DataGridClient state={state} onStateChange={handleStateChange}>
-      <React.Suspense fallback={<div>loooading</div>}>
-        {/* @ts-ignore shut up next */}
-        <DataGridServer getState={props.getState} data={data} />
-      </React.Suspense>
+    <DataGridClient state={state} onStateChange={onStateChangeAction} >
+      {/* @ts-ignore shut up next */}
+      <DataGridServer
+        getState={getState}
+        getData={getData}
+        fetchAdditionalData={props.fetchAdditionalData}
+      />
     </DataGridClient>
   );
 }
