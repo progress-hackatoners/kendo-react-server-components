@@ -4,6 +4,7 @@
   "private": true,
   "workspaces": [
     "demos",
+    "cra",
     "packages/*"
   ],
   "peerDependencies": {

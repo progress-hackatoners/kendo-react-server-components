@@ -1,6 +1,6 @@
 export const initialDataGridState: DataGridState = {
   expanded: [],
-  take: 20,
+  take: 10,
   page: 1,
   sort: [],
   total: 100,

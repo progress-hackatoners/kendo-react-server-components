@@ -1,7 +1,6 @@
 import React from "react";
 
 import Pager from "./pager";
-import { DataGridRow } from "./data-grid-row";
 import DataGridHeaderCell from "./header-cell";
 import DataGridBody from "./data-grid-body";
 
@@ -11,14 +10,15 @@ export type KendoGridState = {
 };
 
 export type DataGridServerProps = {
-  getState: any;
-  getData: any;
+  data?: any;
+  getData?: any;
+  state?: any;
   Row: any;
   fetchAdditionalData?: any;
 };
 
-const DataGrid = async (props: DataGridServerProps) => {
-  const state = (await props.getState?.()) || {};
+const DataGrid = (props: DataGridServerProps) => {
+  const state = props.state;
 
   return (
     <div>
@@ -43,7 +43,7 @@ const DataGrid = async (props: DataGridServerProps) => {
       </table>
       <React.Suspense fallback={<div key={"loading"}>loading</div>}>
         {/* @ts-ignore shut up next */}
-        <DataGridBody {...props} />
+        <DataGridBody {...props} Row={props.Row} />
       </React.Suspense>
       <div>
         <table>

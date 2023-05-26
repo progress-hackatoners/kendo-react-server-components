@@ -2,29 +2,32 @@ import React from "react";
 
 import DataGridServer, { DataGridServerProps } from "./data-grid-server";
 import DataGridClient, { DataGridClientProps } from "./data-grid-client";
+import { StateContext } from "../../context/state";
 
 export type DataGridProps = DataGridServerProps &
   DataGridClientProps & {
+    data?: any;
     getData?: any;
-    getInitialData?: any;
-    getState?: any;
+    state?: any;
     onStateChangeAction?: any;
-    fetchAdditionalData?: any;
+    Row?: any;
   };
 
-async function DataGrid(props: DataGridProps) {
-  const { getData, getState, onStateChangeAction } = props;
-  const state = await getState();
+function DataGrid(props: DataGridProps) {
+  const { getData, state, data, onStateChangeAction } = props;
 
   return (
-    <DataGridClient state={state} onStateChange={onStateChangeAction} >
-      {/* @ts-ignore shut up next */}
-      <DataGridServer
-        getState={getState}
-        getData={getData}
-        fetchAdditionalData={props.fetchAdditionalData}
-      />
-    </DataGridClient>
+    <StateContext.Provider value={state}>
+      <DataGridClient state={state} onStateChange={onStateChangeAction}>
+        {/* @ts-ignore shut up next */}
+        <DataGridServer
+          state={state}
+          data={data}
+          getData={getData}
+          Row={props.Row}
+        />
+      </DataGridClient>
+    </StateContext.Provider>
   );
 }
 
